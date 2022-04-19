@@ -36,6 +36,8 @@ import Backend from 'i18next-fs-backend'
 import i18next from 'i18next'
 import { join } from 'path'
 
+import ElectronContextMenu from 'electron-context-menu'
+
 import { DXVK, Winetricks } from './tools'
 import { Game } from './games'
 import { GameConfig } from './game_config'
@@ -95,6 +97,19 @@ const store = new Store({
   cwd: 'store'
 })
 
+const isDev = !app.isPackaged
+
+ElectronContextMenu({
+  showInspectElement: isDev,
+  showSearchWithGoogle: false,
+  showCopyImage: false,
+  showCopyImageAddress: false,
+  showSaveImage: false,
+  showSaveImageAs: false,
+  showSaveLinkAs: false,
+  showServices: false
+})
+
 const gameInfoStore = new Store({
   cwd: 'lib-cache',
   name: 'gameinfo'
@@ -136,7 +151,8 @@ async function createWindow(): Promise<BrowserWindow> {
     webPreferences: {
       webviewTag: true,
       contextIsolation: false,
-      nodeIntegration: true
+      nodeIntegration: true,
+      spellcheck: true
     }
   })
 
@@ -170,7 +186,7 @@ async function createWindow(): Promise<BrowserWindow> {
     handleExit(mainWindow)
   })
 
-  if (!app.isPackaged) {
+  if (isDev) {
     /* eslint-disable @typescript-eslint/ban-ts-comment */
     //@ts-ignore
     import('electron-devtools-installer').then((devtools) => {
